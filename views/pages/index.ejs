@@ -2,21 +2,24 @@
 <html lang="en">
   <head>
     <title>Book Collection</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/reset.css">
   </head>
   <body>
+    <header></header>
     <main>
       <h4>Search by Title or Author</h4>
       <form action="/searches" method="post">
-        <input type="text" name="search" placeholder="Enter a title or author" required>
-        <fieldset>
+        <input id="search" type="text" name="search" placeholder="Enter a title or author" required>
+        <fieldset class= "options">
           <label for="title">
-            <span>Title</span>
+            <span >Title</span>
             <input type="radio" name="search" value="title" required>
           </label>
         </fieldset>
-        <fieldset>
+        <fieldset class="options">
           <label for="author">
-            <span>Author</span>
+            <span >Author</span>
             <input type="radio" name="search" value="author" required>
           </label>
         </fieldset>
