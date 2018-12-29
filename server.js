@@ -48,7 +48,7 @@ function Book(book){
   console.log(book);
   this.title = book.volumeInfo.title || 'this book does not have a title';
   this.author = book.volumeInfo.authors || 'this book was written by no one'
-  this.isbn = book.volumeInfo.industryIdentifiers
+  this.isbn = book.volumeInfo.industryIdentifiers.identifier
   this.image_url = book.volumeInfo.imageLinks.thumbnail
   this.description = book.volumeInfo.description || 'this book isn\'t important enough for a description'
   this.placeholderImage = 'https://i.imgur.com/J5LVHEL.jpeg';
