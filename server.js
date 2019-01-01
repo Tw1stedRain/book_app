@@ -14,15 +14,31 @@ app.set('view engine', 'ejs')
 
 const client = new pg.Client(process.env.DATABASE_URL);
 client.on('err', err => console.error(err));
-
+client.connect
 const PORT = process.env.PORT || 3000;
 
+//Routes
 app.get('/', home);
-
+app.get('/new', newSearch)
 app.post('/searches', search)
 
+
+
 function home(request, response){
-  response.render('pages/index');
+  const SQL = 'SELECT * FROM books';
+  return client.query(SQL)
+    .then(data =>{
+      let books = data.rows.map(book => new LibraryBook(book));
+      response.render('pages/index', {books});
+    }).catch(err => {
+      console.log(err);
+      response.render('pages/error',{err});
+    });
+}
+
+
+function newSearch(request, response){
+  response.render('pages/searches/new')
 }
 
 function search(request, response){
@@ -40,18 +56,39 @@ function search(request, response){
     .then(result => {
       let books = result.body.items.map(book => new Book(book));
       response.render('pages/searches/show', {books});
-    })
 
+      let SQL = `INSERT INTO books
+      (title, author, description, image_url, isbn, bookshelf)
+      VALUES ($1, $2, $3, $4, $5, $6)`;
+      let values = books[0];
+      return client.query(SQL, [values.title, values.author, values.description, values.image_url, values.isbn, values.bookshelf]);
+    }).catch(err => {
+      console.log(err);
+      response.render('pages/error',{err});
+    });
 }
 
-function Book(book){
+//Constructors
+
+function Book(book, bookshelf){
   console.log(book);
   this.title = book.volumeInfo.title || 'this book does not have a title';
   this.author = book.volumeInfo.authors || 'this book was written by no one'
-  this.isbn = book.volumeInfo.industryIdentifiers.identifier
+  this.isbn = book.volumeInfo.industryIdentifiers[0].type + ' ' + book.volumeInfo.industryIdentifiers[0].identifier
   this.image_url = book.volumeInfo.imageLinks.thumbnail
   this.description = book.volumeInfo.description || 'this book isn\'t important enough for a description'
-  this.placeholderImage = 'https://i.imgur.com/J5LVHEL.jpeg';
+  // this.placeholderImage = 'https://i.imgur.com/J5LVHEL.jpeg';
+  this.bookshelf = bookshelf;
 }
 
+function LibraryBook(book){
+  console.log(book);
+  this.title = book.title;
+  this.author = book.author;
+  this.isbn = book.isbn;
+  this.image_url = book.image_url;
+  this.description = book.description;
+  this.bookshelf = bookshelf;
+  this.id = book.id;
+}
 app.listen(PORT, () => console.log(`APP is up on PORT : ${PORT}`));
