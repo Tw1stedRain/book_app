@@ -25,6 +25,8 @@ app.get('/new', newSearch)
 app.post('/searches', search)
 app.post('/book', addBook)
 
+let books = [];
+
 function addBook(req, res){
   console.log(req.body);
   let newBook = new LibraryBook(req.body);
@@ -72,6 +74,7 @@ function search(request, response){
   return superagent.get(url)
     .then(result => {
       let books = result.body.items.map(book => new Book(book));
+      console.log(books);
       response.render('pages/searches/show', {books});
 
       let SQL = `INSERT INTO books
